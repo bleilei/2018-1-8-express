@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>nav</title>
+    <link rel="stylesheet" href="/style/css/icon.css">
+    <link rel="stylesheet" href="/style/css/materialize.min.css"/>
+    <link rel="stylesheet" href="/style/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/style/resetBootstrap.css">
+    <link rel="stylesheet" href="/style/iconfont.css"/>
+    <link rel="stylesheet" href="/style/css/custom-styles.css"/>
+    <link rel="stylesheet" href="/style/window.css">
+    <link rel="stylesheet" href="/style/common.css">
+    <style>
+        .file {
+            position: relative;
+            /*display: inline-block;*/
+            background: #D0EEFF;
+            border: 1px solid #99D3F5;
+            border-radius: 4px;
+            padding: 4px 12px;
+            overflow: hidden;
+            color: #1E88C7;
+            text-decoration: none;
+            text-indent: 0;
+            line-height: 20px;
+        }
+
+        .file input {
+            position: absolute;
+            right: 0;
+            top: 0;
+            opacity: 0;
+        }
+
+        .file:hover {
+            background: #AADFFD;
+            border-color: #78C3F3;
+            color: #004974;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="wrapper">
+    <%-include header.html-%>
+    <div id="page-wrapper">
+        <div class="header">
+            <ol class="breadcrumb">
+                <li>当前位置：</li>
+                <li><a href="/home">Home</a> /<a href="/scrollPage">nav列表</a> /<a href="#">添加</a></li>
+            </ol>
+        </div>
+        <div id="page-inner">
+            <div class="cardPadd card">
+                <div class="card-content">
+                    <form enctype="multipart/form-data">
+                    <dl>
+                        <dd>
+                            <label>描述:</label>
+                            <input type="text" id="dec" placeholder="请输入图片的描述">
+                        </dd>
+                        <dd>
+                            <label>图片:</label>
+                            <img id="show"
+                                 style="max-width:100%;max-height:400px;overflow:hidden;min-width:200px;min-height:200px;margin-bottom:20px;display:block;">
+                            <a href="javascript:void(0);" class="file">选择图片
+                                <input type="file" name="fileToUpload" onchange="changepic()" id="fileToUpload"
+                                       class="fileupload"/>
+                            </a>
+                        </dd>
+                        <dd style="margin-top:30px;">
+                            <button id="button" type="button" class="btn btn-success">确认提交</button>
+                        </dd>
+                    </dl>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <%-include footer.html-%>
+    </div>
+</div>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/script/materialize.min.js"></script>
+<script type="text/javascript" src="/js/layer.js"></script>
+<script type="text/javascript" src="/js/window.js"></script>
+<script>
+    //input上传图片并预览
+    function changepic() {
+        var reads = new FileReader();
+        file = document.getElementById('fileToUpload').files[0];
+        var name = file.name;
+        var AllImgExt=".jpg|.jpeg|.gif|.bmp|.png|";
+        var extension = name.substring(name.indexOf('.'),name.length).toLowerCase();
+        console.log(extension);
+        if(AllImgExt.indexOf( extension +"|") === -1){
+            var ErrMsg = "该文件类型不允许上传,请上传 " + AllImgExt + " 类型的文件,当前文件类型为" + extension;
+            layer.msg(ErrMsg);
+            return;
+        }else if(file.size > 1024 * 1024){
+            layer.msg('上传的图片不能大于1M');
+            return;
+        }
+        reads.readAsDataURL(file);
+        reads.onload = function () {
+            document.getElementById('show').src = this.result;
+        };
+    }
+
+    $('#button').click(function () {
+        var dec = document.getElementById("dec").value;
+        var fileName = $('.fileupload').val();
+        var formData = new FormData();
+        if (!dec) {
+            layer.msg("请输入相关描述文字");
+            return;
+        }
+        if (!$("#fileToUpload").val().length) {
+            layer.msg("请上传相关图片");
+            return;
+        }
+        formData.append('upload', $('#fileToUpload')[0].files[0]);
+        formData.append('dec', dec);
+        $.ajax({
+            url: '/submitIndexNav',
+            type: 'POST',
+            data: formData,
+            cache: false,
+            contentType: false, //不可缺参数
+            processData: false, //不可缺参数
+            header: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            success: function (returnJson) {
+                if (returnJson.msg === 'success') {
+                    layer.msg(returnJson.data);
+                    setTimeout(function () {
+                        location.href = '/scrollPage'
+                    }, 300);
+                } else {
+                    layer.msg(returnJson.data)
+                }
+
+            },
+            error: function (err) {
+                layer.msg('服务器错误');
+            }
+        });
+    })
+</script>
+</body>
+</html>

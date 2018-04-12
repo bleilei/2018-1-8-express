@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title><%=title%></title>
+    <meta name="author" content="DeathGhost"/>
+    <link rel="stylesheet" href="/style/reset.css">
+    <link rel="stylesheet" href="/style/@login.css"/>
+    <link rel="stylesheet" href="/style/common.css"/>
+    <link rel="stylesheet" href="/style/iconfont.css">
+    <style>
+        body {
+            height: 100%;
+            background: #16a085;
+            overflow: hidden;
+        }
+
+        canvas {
+            z-index: -1;
+            position: absolute;
+        }
+        .btnBox{
+            width:100%;
+            text-align:center;
+        }
+        .btnBox .btn{
+            width:6rem;
+            height:6rem;
+            border-radius:50%;
+            background:rgba(255,255,255,.2);
+            overflow:hidden;
+            box-shadow: 15px 15px 30px #0d957a;
+            color:#fff;
+            margin:0 10px;
+        }
+        .btnBox p{
+            color:#fff;
+        }
+        #vercodeForget{
+            width:60%;
+        }
+        #verBtn{
+            width:40%;
+            border-left:1px solid #fff;
+            box-sizing:border-box;
+            -webkit-box-sizing: border-box;
+            line-height:42px;
+            background:rgba(255,255,255,.3);
+            color:#fff;
+        }
+    </style>
+</head>
+<body>
+    <!--登陆-->
+    <dl class="admin_login" id="login">
+        <dt>
+            <strong>优优后台管理系统</strong>
+            <em>Management System</em>
+        </dt>
+        <dd class="user_icon">
+            <input type="text" id="usernameLogin" clientidmode="Static" placeholder="登陆账号" class="login_txtbx"/>
+        </dd>
+        <dd class="pwd_icon">
+            <input type="password" id="passwordLogin" clientidmode="Static" placeholder="登陆密码" class="login_txtbx"/>
+        </dd>
+        <dd class="val_icon">
+            <div class="checkcode">
+                <input type="text" id="J_codetext" placeholder="验证码" maxlength="4" class="login_txtbx">
+                <canvas class="J_codeimg" id="myCanvas" onclick="createCode()">对不起，您的浏览器不支持canvas，请下载最新版浏览器!</canvas>
+            </div>
+        </dd>
+        <dd>
+            <input type="submit" id="submit_login" value="立即登陆" class="submit_btn"/>
+        </dd>
+    </dl>
+    <!--注册-->
+    <dl class="admin_login hide" id="regist">
+        <dt>
+            <strong>优优后台管理系统</strong>
+            <em>Management System</em>
+        </dt>
+        <dd class="user_icon">
+            <input type="text" id="usernameRegist" clientidmode="Static" placeholder="请输入登陆账号" class="login_txtbx"/>
+        </dd>
+        <dd class="user_icon">
+            <input type="email" id="mailRegist" clientidmode="Static" placeholder="忘记密码时验证邮箱" class="login_txtbx"/>
+        </dd>
+        <dd class="pwd_icon">
+            <input type="password" id="passwordRegist" clientidmode="Static" placeholder="请输入登陆密码" class="login_txtbx"/>
+        </dd>
+        <dd class="pwd_icon">
+            <input type="password" id="passwordRegist-1" clientidmode="Static" placeholder="请再次输入登陆密码" class="login_txtbx"/>
+        </dd>
+        <dd>
+            <input type="button" id="submit_regist" value="立即注册" class="submit_btn"/>
+        </dd>
+    </dl>
+    <!--忘记密码-->
+    <dl class="admin_login hide" id="forget">
+        <dt>
+            <strong>优优后台管理系统</strong>
+            <em>Management System</em>
+        </dt>
+        <dd class="user_icon">
+            <input type="mail" id="mailForget" clientidmode="Static" placeholder="填写绑定的邮箱账号" class="login_txtbx"/>
+        </dd>
+        <dd class="pwd_icon flex">
+            <input type="text" id="vercodeForget" maxlength="6" clientidmode="Static" placeholder="验证码" class="login_txtbx"/>
+            <input type="button" id="verBtn" value="获取验证码">
+        </dd>
+        <dd class="pwd_icon">
+            <input type="password" id="passwordForget" clientidmode="Static" placeholder="请输入新密码" class="login_txtbx"/>
+        </dd>
+        <dd class="pwd_icon">
+            <input type="password" id="passwordForget-1" clientidmode="Static" placeholder="请再次输入新密码" class="login_txtbx"/>
+        </dd>
+        <dd>
+            <input type="button" id="submit_forget" value="修改密码" class="submit_btn"/>
+        </dd>
+    </dl>
+    <div class="btnBox" id="btnBox">
+        <button class="btn" id="loginBtn" type="button">
+            <span class="iconfont icon-login"></span>
+            <p>登陆</p>
+        </button>
+        <button class="btn" id="registBtn" type="button">
+            <span class="iconfont icon-regist"></span>
+            <p>新用户注册</p>
+        </button>
+        <button class="btn" id="forgetBtn" type="button">
+            <span class="iconfont icon-forget"></span>
+            <p>忘记密码</p>
+        </button>
+    </div>
+    <script type="text/javascript" src="/js/script/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="/js/login/verificationNumbers.js"></script>
+    <script type="text/javascript" src="/js/login/Particleground.js"></script>
+    <script type="text/javascript" src="/js/layer.js"></script>
+    <script>
+        var wait=10;
+        $("body").bind("keydown",function(e){
+            var theEvent = e || window.event;
+            var code = theEvent.keyCode || theEvent.which || theEvent.charCode;
+            if (code === 13) {
+                //回车执行查询
+                $("#submit_login").click();
+            }
+        });
+        $(document).ready(function(){
+            $('body').particleground({
+                dotColor: '#5cbdaa',
+                lineColor: '#5cbdaa'
+            });
+            createCode();
+            $("#submit_login").click(function(){
+                var username = document.getElementById('usernameLogin').value;
+                var password = document.getElementById('passwordLogin').value;
+                var code = validate();
+                if(!username){
+                    layer.msg('请输入登陆账号');
+                    return;
+                }
+                if(!password){
+                    layer.msg('请输入登陆密码！');
+                    return;
+                }
+//                if(code === 0){
+//                    layer.msg('验证码不能为空');
+//                    return;
+//                }else if(code === 1){
+//                    layer.msg('验证码错误');
+//                    return;
+//                }
+                $.ajax({
+                    url: "/getDataLogin",
+                    type: 'GET',
+                    timeout:10000,
+                    data: {
+                        username:username,
+                        password:password
+                    },
+                    success: function(returnJson) {
+                        if(returnJson.msg === 'success'){
+                            layer.msg(returnJson.data);
+                            location.href = '/home';
+                        }else{
+                            document.getElementById('usernameLogin').value = '';
+                            document.getElementById('passwordLogin').value = '';
+                            layer.msg(returnJson.data);
+                        }
+                    },error:function(err){
+                        layer.msg('系统错误，请联系管理员');
+                    }
+                })
+            });
+            $("#submit_regist").click(function(){
+                var username = document.getElementById('usernameRegist').value;
+                var password = document.getElementById('passwordRegist').value;
+                var password_1 = document.getElementById('passwordRegist-1').value;
+                var mail = document.getElementById('mailRegist').value;
+                if(!username){
+                    layer.msg('请输入用户名！');
+                    return;
+                }
+                if(!mail){
+                    layer.msg('请输入找回密码时所用的邮箱');
+                    return;
+                }else if(!/^([0-9A-Za-z\-_\.]+)@([0-9a-z]+\.[a-z]{2,3}(\.[a-z]{2})?)$/g.test(mail)){
+                    layer.msg('请输入正确的邮箱');
+                    return;
+                }
+                if(!password){
+                    layer.msg('请输入登陆密码！');
+                    return;
+                }else if(password.length < 6){
+                    layer.msg('密码不能少于6位');
+                    return;
+                }
+                if(!password_1){
+                    layer.msg('请确认登陆密码！');
+                    return;
+                }
+                if(password !== password_1){
+                    layer.msg('两次密码输入不一致！');
+                    return;
+                }
+                $.ajax({
+                    url:'/getDataRegist',
+                    type:"POST",
+                    timeout:10000,
+                    data:{
+                        username:username,
+                        password:password,
+                        mail:mail
+                    },
+                    header: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    success:function(returnJson){
+                        if(returnJson.msg === 'success'){
+                            layer.msg(returnJson.data);
+                            setTimeout(function(){
+                                location.href = '/'
+                            },500);
+                        }else{
+                            layer.msg(returnJson.data)
+                        }
+                    },error:function(err){
+                        layer.msg(JSON.stringify(err))
+                    }
+                })
+            })
+            $("#submit_forget").click(function(){
+                var mail = document.getElementById('mailForget').value;
+                var code = document.getElementById("vercodeForget").value;
+                var password = document.getElementById('passwordForget').value;
+                var password_1 = document.getElementById('passwordForget-1').value;
+                if(!mail){
+                    layer.msg('请输入邮箱！');
+                    return;
+                }
+                if(!code){
+                    layer.msg('请输入正确的验证码');
+                    return;
+                }else if(code.length < 6){
+                    layer.msg('验证码位数不正确');
+                    return;
+                }
+                if(!password){
+                    layer.msg('请输入新密码！');
+                    return;
+                }else if(password.length < 6){
+                    layer.msg('密码不能少于6位');
+                    return;
+                }
+                if(!password_1){
+                    layer.msg('请再次输入新密码！');
+                    return;
+                }
+                if(password !== password_1){
+                    layer.msg('两次密码输入不一致！');
+                    return;
+                }
+                $.ajax({
+                    url:'/forgetPassword',
+                    type:"POST",
+                    timeout:10000,
+                    data:{
+                        mail:mail,
+                        code:code,
+                        password:password
+                    },
+                    header: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    success:function(returnJson){
+                        if(returnJson.msg === 'success'){
+                            layer.msg(returnJson.data);
+                            setTimeout(function(){
+                                location.href = '/'
+                            },500);
+                        }else{
+                            layer.msg(returnJson.data)
+                        }
+                    },error:function(err){
+                        layer.msg(JSON.stringify(err))
+                    }
+                })
+            })
+        });
+        $("#verBtn").click(function(){
+            var mail = document.getElementById("mailForget").value;
+            if(!mail){
+                layer.msg('请输入注册时填写的邮箱');
+                return;
+            }else if(!/^([0-9A-Za-z\-_\.]+)@([0-9a-z]+\.[a-z]{2,3}(\.[a-z]{2})?)$/g.test(mail)){
+                layer.msg('请输入正确的邮箱');
+                return;
+            }
+            time(this);
+            $.ajax({
+                url:'/code',
+                type:"GET",
+                timeout:10000,
+                data:{
+                    to:mail
+                },
+                success:function(returnJson){
+                    if(returnJson.msg === 'success'){
+                        layer.msg(returnJson.data);
+                    }else{
+                        layer.msg(returnJson.data)
+                    }
+                },error:function(err){
+                    layer.msg(JSON.stringify(err))
+                }
+            })
+        });
+        var btnlist = document.querySelectorAll("#btnBox button");
+        btnlist.forEach(function(item,index){
+            btnlist[index].onclick = function(){
+                switch(index){
+                    case 0:
+                        document.getElementById("regist").classList.add('hide');
+                        document.getElementById("forget").classList.add('hide');
+                        document.getElementById("login").classList.remove('hide');
+                    break;
+                    case 1:
+                        document.getElementById("regist").classList.remove('hide');
+                        document.getElementById("forget").classList.add('hide');
+                        document.getElementById("login").classList.add('hide');
+                    break;
+                    case 2:
+                        document.getElementById("regist").classList.add('hide');
+                        document.getElementById("forget").classList.remove('hide');
+                        document.getElementById("login").classList.add('hide');
+                    break;
+                }
+            }
+        });
+
+        function time(_this) {
+            if (wait === 0) {
+                _this.removeAttribute("disabled");
+                _this.value="获取验证码";
+                wait = 10;
+            } else {
+                _this.setAttribute("disabled", true);
+                _this.value= "重新发送("+wait + "s)";
+                wait--;
+                setTimeout(function() {
+                    time(_this)
+                },1000)
+            }
+        }
+
+    </script>
+</body>
+</html>

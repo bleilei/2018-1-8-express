@@ -1,0 +1,10 @@
+nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons{
+    display:inline-block;
+}
+.dropdown-content li>a>i{
+    line-height:1 !important;
+    margin-right:5px;
+}
+.breadcrumb a{
+    margin:0 5px;
+}

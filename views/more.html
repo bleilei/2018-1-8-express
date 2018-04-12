@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="/style/layui/layui.css">
+    <style>
+    </style>
+</head>
+<body>
+<div class="layui-upload">
+    <button type="button" class="layui-btn" id="uploadBtn">多图片上传</button>
+    <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+        预览图：
+        <div class="layui-upload-list" id="previewBox">
+
+        </div>
+    </blockquote>
+    <button class="layui-btn" id="save">提交</button>
+</div>
+</body>
+<script src="/js/layui/layui.js"></script>
+<script src="/"></script>
+<script>
+    layui.use(['upload', 'jquery'], function () {
+        var $ = layui.jquery;
+        var upload = layui.upload;
+        var srcArr = new Array();
+        upload.render({
+            elem: '#uploadBtn',
+            url: '/uploadImgs',
+            multiple: true,
+            bindAction: "#save",
+            auto: false,
+            choose: function (obj) {//预览图片
+                var files = obj.pushFile();
+                obj.preview(function (index, file, result) {
+                    $('#previewBox'
+                    ).append('<div class="imgBox"><em class="remove_' + index + '">删除</em><img src="' + result + '" alt="' + file.name + '" class="layui-upload-img"></div>');
+                    $('.remove_' + index).bind('click', function () {
+                        delete files[index];//删除指定图片
+                        $(this).parent().remove();
+                    })
+                });
+            },
+            done: function (res) {
+                if (res.code === 200) {
+                    var srcStr = res.data[0];
+                    srcStr = srcStr.replace("publics", "").substring(1, srcStr.length);
+                    srcArr.push(srcStr);
+                    for (var i in srcArr) {
+                        $('#previewBox img').eq(i).attr('src', srcArr[i]);
+                        $('#previewBox em').eq(i).remove();
+                    }
+                }
+            }
+        })
+        ;
+
+    })
+
+</script>
+</html>

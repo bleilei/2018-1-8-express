@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%=title%></title>
+    <link rel="stylesheet" href="/style/css/icon.css">
+    <link rel="stylesheet" href="/style/css/materialize.min.css"/>
+    <link rel="stylesheet" href="/style/iconfont.css"/>
+    <link rel="stylesheet" href="/style/window.css">
+    <link rel="stylesheet" href="/style/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/style/resetBootstrap.css">
+    <link rel="stylesheet" href="/style/css/custom-styles.css"/>
+    <link rel="stylesheet" href="/style/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="/style/css/table.css">
+
+</head>
+<body>
+<div id="wrapper">
+    <%-include header.html-%>
+    <div id="page-wrapper">
+        <div class="header">
+            <ol class="breadcrumb">
+                <li>当前位置：</li>
+                <li><a href="/home">Home</a> /<a href="/user">用户列表</a></li>
+            </ol>
+        </div>
+        <div id="page-inner">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-top">
+                            <button type="button" onclick="sendWord()" class="btn btn-success">导出word</button>
+                        </div>
+                        <div class="panel-body table-responsive">
+                            <table id="userTable" class="table display">
+                                <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>用户名</th>
+                                    <th>注册时间</th>
+                                    <th>密码</th>
+                                </tr>
+                                </thead>
+                                <tfoot>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>用户名</th>
+                                    <th>注册时间</th>
+                                    <th>密码</th>
+                                </tr>
+                                </tfoot>
+                                <tbody id="tbody">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%-include footer.html-%>
+    </div>
+</div>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/script/plugins.js"></script>
+<script type="text/javascript" src="/js/script/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/js/window.js"></script>
+<script type="text/javascript" src="/js/layer.js"></script>
+<script>
+    $(document).ready(function(){
+        ajax();
+    });
+    function ajax(){
+        $.ajax({
+            url:'/getUseRegist',
+            type:"GET",
+            timeout:10000,
+            data:{},
+            success:function(returnJson){
+                if(returnJson.msg === 'success'){
+                    var data = returnJson.data;
+                    $('#userTable').DataTable({
+                        data: data,
+                        deferRender: true,
+                        columns: [
+                            { data: 'id' },
+                            { data: 'username' },
+                            { data: 'date' },
+                            { data: 'password' }
+                        ],
+                        language: {
+                            "sProcessing": "处理中...",
+                            "sLengthMenu": "显示 _MENU_ 项结果",
+                            "sZeroRecords": "没有匹配结果",
+                            "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                            "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                            "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+                            "sInfoPostFix": "",
+                            "sSearch": "搜索:",
+                            "sUrl": "",
+                            "sEmptyTable": "还没有用户注册哦",
+                            "sLoadingRecords": "载入中...",
+                            "sInfoThousands": ",",
+                            "oPaginate": {
+                                "sFirst": "首页",
+                                "sPrevious": "上页",
+                                "sNext": "下页",
+                                "sLast": "末页"
+                            },
+                            "oAria": {
+                                "sSortAscending": ": 以升序排列此列",
+                                "sSortDescending": ": 以降序排列此列"
+                            }
+                        }
+                    });
+                }else{
+                    layer.msg(returnJson.data)
+                }
+            },error:function(){
+                layer.msg('网络异常')
+            }
+        });
+    }
+    function sendWord(){
+
+    }
+</script>
+</body>
+</html>

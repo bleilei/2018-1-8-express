@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%=title%></title>
+    <link rel="stylesheet" href="/style/css/icon.css">
+    <link rel="stylesheet" href="/style/css/materialize.min.css"/>
+    <link rel="stylesheet" href="/style/iconfont.css"/>
+    <link rel="stylesheet" href="/style/window.css">
+    <link rel="stylesheet" href="/style/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/style/resetBootstrap.css">
+    <link rel="stylesheet" href="/style/css/custom-styles.css"/>
+    <link rel="stylesheet" href="/style/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="/style/css/table.css">
+    <style>
+        input[name='title'],input[name='content'],input[name='author']{
+            width:100% !important;
+        }
+        .layui-layer-content{
+            padding:20px !important;
+        }
+        .form-group button{
+            width:100%;
+        }
+    </style>
+</head>
+<body>
+<div id="wrapper">
+    <%-include header.html-%>
+    <div id="page-wrapper">
+        <div class="header">
+            <ol class="breadcrumb">
+                <li>当前位置：</li>
+                <li><a href="/home">Home</a> /<a href="/article">文章列表</a></li>
+            </ol>
+        </div>
+        <div id="page-inner">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-top">
+                            <button type="button" onclick="edit()" class="btn btn-success">编辑</button>
+                            <button type="button" onclick="del()" class="btn btn-danger">删除</button>
+                            <button type="button" onclick="reco()" class="btn btn-primary">推荐</button>
+                            <a href="/artAdd"><button type="button" class="btn btn-primary">添加</button></a>
+                        </div>
+                        <div class="panel-body table-responsive">
+                            <table id="userTable" class="table display">
+                                <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>文章标题</th>
+                                    <th>文章作者</th>
+                                    <th>发布时间</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tfoot>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>文章标题</th>
+                                    <th>文章作者</th>
+                                    <th>发布时间</th>
+                                    <th>操作</th>
+                                </tr>
+                                </tfoot>
+                                <tbody id="tbody">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%-include footer.html-%>
+    </div>
+</div>
+<div class="editForm" id="editForm" style="display:none;">
+        <div class="form-group row">
+            <label for="inputTitle" class="col-sm-4 col-form-label">文章标题:</label>
+            <div class="col-sm-12">
+                <input type="text" name="title" class="form-control" id="inputTitle" placeholder="请输入文章标题">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="inputAuthor" class="col-sm-4 col-form-label">文章作者:</label>
+            <div class="col-sm-12">
+                <input type="text" name="author" class="form-control" id="inputAuthor" placeholder="请输入作者">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="inputContent" class="col-sm-4 col-form-label">文章内容:</label>
+            <div class="col-sm-12">
+                <input type="text" name="content" class="form-control" id="inputContent" placeholder="请输入文章内容">
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-12">
+                <div class="form-check">
+                    <input class="form-check-input" name="check" hidden type="checkbox" id="gridCheck">
+                    <label class="form-check-label" for="gridCheck">是否推荐</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-12">
+                <button type="button" id="submit" class="btn btn-primary">确定</button>
+            </div>
+        </div>
+</div>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/script/plugins.js"></script>
+<script type="text/javascript" src="/js/script/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/js/window.js"></script>
+<script type="text/javascript" src="/js/layer.js"></script>
+<script>
+    var formIframe,formData;
+    $(document).ready(function(){
+        ajax();
+        $('form').on('submit', function (e) {
+            e.preventDefault()
+        });
+    });
+    function ajax(){
+        $.ajax({
+            url:'/getArticle',
+            type:"GET",
+            timeout:10000,
+            data:{},
+            success:function(returnJson){
+                if(returnJson.msg === 'success'){
+                    var json = returnJson.data;
+                    $('#userTable').DataTable({
+                        data: json,
+                        deferRender: true,
+                        columns: [
+                            { data: 'id' },
+                            { data: 'title' },
+                            { data: 'author' },
+                            { data: 'time' },
+                            { data: 'action' }
+                        ],
+                        columnDefs: [{
+                            "targets": -1,//编辑
+                            "data": null,
+                            "defaultContent": "<input id='dataTableCheckbox' type='checkbox' />"
+                        }],
+                        language: {
+                            "sProcessing": "处理中...",
+                            "sLengthMenu": "显示 _MENU_ 项结果",
+                            "sZeroRecords": "没有匹配结果",
+                            "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                            "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                            "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+                            "sInfoPostFix": "",
+                            "sSearch": "搜索:",
+                            "sUrl": "",
+                            "sEmptyTable": "还没有文章哦",
+                            "sLoadingRecords": "载入中...",
+                            "sInfoThousands": ",",
+                            "oPaginate": {
+                                "sFirst": "首页",
+                                "sPrevious": "上页",
+                                "sNext": "下页",
+                                "sLast": "末页"
+                            },
+                            "oAria": {
+                                "sSortAscending": ": 以升序排列此列",
+                                "sSortDescending": ": 以降序排列此列"
+                            }
+                        }
+                    });
+                }else{
+                    layer.msg(returnJson.data);
+                }
+            },error:function(){
+                layer.msg('网络异常')
+            }
+        });
+    }
+//    $("#tbody").on( 'click', '#dataTableCheckbox', function () {
+//        if ( $(this).hasClass('selected') ) {
+//            $(this).removeClass('selected');
+//        }else {
+//            $(this).addClass('selected');
+//        }
+//    });
+    function edit(){
+        var table = $('#userTable').DataTable();
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        var arr = [];
+        checkboxes.forEach(function(item,index){
+            if(item.checked === true){
+                formData = table.row( $(item).parents('tr') ).data();
+                arr.push(index);
+            }
+        });
+        if(arr.length === 0){
+            layer.msg('请选择一项进行修改信息');
+            return;
+        }
+        if(arr.length >= 2){
+            layer.msg('不能同时修改超过两项');
+            return;
+        }
+        formIframe =layer.open({
+            type: 1,
+            title: '修改信息',
+            closeBtn: 1,
+            shadeClose: true,
+            skin: 'layui-layer-rim', //加上边框
+            area: ['50%', 'auto'], //宽高
+            content: $("#editForm")
+        });
+        var check = formData.reco === '1' ? "checked" : "";
+        $("#inputTitle").attr('value',formData.title);
+        $("#inputAuthor").attr('value',formData.author);
+        $("#inputContent").attr('value',formData.content);
+        $("#gridCheck").attr('checked',check);
+    }
+    $("#submit").click(function(){
+        var checkFlag;
+        if($("#gridCheck").is(':checked')){
+            checkFlag = 1
+        }else{
+            checkFlag = 0
+        }
+        $.ajax({
+            url:'/edit',
+            type:"POST",
+            timeout:10000,
+            data:{
+                id:formData.id,
+                title:$("#inputTitle").val(),
+                content:$("#inputContent").val(),
+                author:$("#inputAuthor").val(),
+                check:checkFlag
+            },
+            success:function(returnJson){
+                if(returnJson.msg === 'success'){
+                    layer.msg(returnJson.data);
+                    layer.close(formIframe);
+                    setTimeout(function(){
+                        location.reload();
+                    },500);
+                }else{
+                    layer.msg(returnJson.data)
+                }
+            },error:function(){
+                layer.msg('网络错误')
+            }
+        })
+    });
+    function del(){
+        var table = $('#userTable').DataTable();
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        var delArr = [];
+        $.each(checkboxes,function(i,o){
+            if(checkboxes[i].checked === true){
+                var data = table.row( $(o).parents('tr') ).data();
+                delArr = delArr.concat(data.id);
+            }else{
+                layer.msg('请选择要删除的项');
+                return;
+            }
+        });
+        var index = layer.load(1, {
+            shade: [0.2,'#000']
+        });
+        $.ajax({
+            url:'/delArticle',
+            type:"POST",
+            timeout:10000,
+            data:{
+                json:JSON.stringify(delArr)
+            },
+            success:function(returnJson){
+                if(returnJson.msg === 'success'){
+                    layer.close(index);
+                    layer.msg(returnJson.data);
+                    setTimeout(function(){
+                        location.reload();
+                    },500);
+                }else{
+                    layer.msg(returnJson.data)
+                }
+            },error:function(){
+                layer.msg('网络错误')
+            }
+        })
+
+    }
+    function reco(){
+        var table = $('#userTable').DataTable();
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        var recoArr = [];
+        var flag = false;
+        $.each(checkboxes,function(i,o){
+            if(checkboxes[i].checked === true){
+                var data = table.row( $(o).parents('tr') ).data();
+                if(data.reco === "1"){
+                    layer.msg("已推荐或者包含已推荐的项");
+                    return false;
+                }else{
+                    flag = true;
+                    recoArr = recoArr.concat(data.id);
+                }
+            }else{
+                layer.msg('请选择要推荐的项');
+                return false;
+            }
+        });
+        if(flag === false){
+            return;
+        }
+        var index = layer.load(1, {
+            shade: [0.2,'#000']
+        });
+        $.ajax({
+            url:'/rreco',
+            type:"POST",
+            timeout:10000,
+            data:{
+                json:JSON.stringify(recoArr)
+            },
+            success:function(returnJson){
+                if(returnJson.msg === 'success'){
+                    layer.close(index);
+                    layer.msg(returnJson.data);
+                    setTimeout(function(){
+                        location.reload();
+                    },500);
+                }else{
+                    layer.msg(returnJson.data)
+                }
+            },error:function(){
+                layer.msg('网络错误')
+            }
+        })
+    }
+</script>
+</body>
+</html>

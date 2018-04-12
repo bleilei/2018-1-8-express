@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/style/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/style/resetBootstrap.css">
+    <link rel="stylesheet" href="/style/css/materialize.min.css">
+    <link rel="stylesheet" href="/style/css/custom-styles.css"/>
+    <link rel="stylesheet" href="/style/window.css">
+    <style>
+        .input-field input{
+            height:3rem !important;
+            border-top:none !important;
+            border-left:none !important;
+            border-right:none !important;
+        }
+        #reco{
+            border:1px solid #9e9e9e !important;
+        }
+        [type="checkbox"]:not(:checked), [type="checkbox"]:checked{
+            left:40px !important;
+            opacity:1;
+        }
+        .submitBtn{
+            margin-left:40px;
+            padding-bottom:20px;
+        }
+        .cardPadd{
+            padding-bottom:20px;
+        }
+    </style>
+</head>
+<body>
+<%-include header.html-%>
+<div id="page-wrapper">
+    <div class="header">
+        <ol class="breadcrumb">
+            <li>当前位置：</li>
+            <li><a href="/home">Home</a> / <a href="/article">文章管理</a></li>
+        </ol>
+    </div>
+    <div id="page-inner">
+        <div class="row">
+            <div class="col-lg-10">
+                <div class="cardPadd card">
+                    <div class="card-action">
+                        添加文章
+                    </div>
+                    <div class="card-content">
+                        <form class="col s12">
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input id="icon_prefix" type="text" class="validate">
+                                    <label for="icon_prefix">文章标题</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input id="icon_author" type="tel" class="validate">
+                                    <label for="icon_author">文章作者</label>
+                                </div>
+                            </div>
+                        </form>
+                        <%-include editer.html-%>
+                        <div class="checkbox">
+                            <label for="reco">
+                                <input type="checkbox" id="reco"> 设置为推荐
+                            </label>
+                        </div>
+                    </div>
+                    <button type="button" onclick="add()" class="submitBtn btn btn-success">发布</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%-include footer.html-%>
+<script type="text/javascript" src="/js/window.js"></script>
+<script type="text/javascript" src="/js/layer.js"></script>
+<script>
+    function add() {
+        var title = $("#icon_prefix").val();
+        var author = $("#icon_author").val();
+        var html = $("#textarea2").val();
+        var check = document.getElementById("reco");
+        var reco = check.checked ? 1 : 0;
+        if(!title){
+            layer.msg("请输入文章标题");
+            return;
+        }
+        if(!author){
+            layer.msg("请输入文章作者");
+            return;
+        }
+        if(!html){
+            layer.msg("请输入文章内容");
+            return;
+        }
+        $.ajax({
+            url:'/add',
+            type:"POST",
+            timeout:10000,
+            data:{
+               title:title,
+               author:author,
+               content:html,
+               reco:reco
+            },
+            success:function(returnJson){
+                if(returnJson.msg === 'success'){
+                    layer.msg(returnJson.data);
+                    setTimeout(function(){
+                        location.href = '/article'
+                    },300)
+                }else{
+                    layer.msg(returnJson.data)
+                }
+            },error:function(){
+                layer.msg('网络异常')
+            }
+        })
+    }
+</script>
+</body>
+</html>

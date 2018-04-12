@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>公共页头</title>
+    <style>
+        .nav .open > a, .nav .open > a:focus, .nav .open > a:hover {
+            background: none !important;
+            border: none !important;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-default top-navbar" role="navigation">
+    <div class="navbar-header">
+        <a class="navbar-brand waves-effect waves-dark" href="/home"><strong>HOME</strong></a>
+        <div id="sideNav" href="#!"><i class="iconmoon icon-menu" style="display:block;"></i></div>
+    </div>
+    <ul class="nav navbar-top-links navbar-right">
+        <li>
+            <a class="dropdown-button waves-effect waves-dark" href="#!" data-activates="dropdown2">
+                <i class="iconmoon icon-message"></i>
+                <i class="iconmoon icon-tr-down"></i>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-button waves-effect waves-dark" href="#!" data-activates="dropdown1">
+                <i class="iconmoon icon-userSelf"></i> <b><%=user.nickname%></b>
+                <i class="iconmoon icon-tr-down"></i>
+            </a>
+        </li>
+    </ul>
+</nav>
+<ul id="dropdown1" class="dropdown-content">
+    <li>
+        <a href="/editUserInfo"><i class="iconmoon icon-userSelf"></i>我的资料</a>
+    </li>
+    <li>
+        <a href="#"><i class="iconmoon icon-setting"></i>设置</a>
+    </li>
+    <li>
+        <a href="/layout"><i class="iconmoon icon-layout"></i>退出</a>
+    </li>
+</ul>
+<ul id="dropdown2" class="dropdown-content w250">
+    <li>
+        <div>
+            <i class="fa fa-comment fa-fw"></i> New Comment
+            <span class="pull-right text-muted small">4 min</span>
+        </div>
+    </li>
+    <li class="divider"></li>
+    <li>
+        <div>
+            <i class="fa fa-twitter fa-fw"></i> 3 New Followers
+            <span class="pull-right text-muted small">12 min</span>
+        </div>
+    </li>
+    <li class="divider"></li>
+    <li>
+        <div>
+            <i class="fa fa-envelope fa-fw"></i> Message Sent
+            <span class="pull-right text-muted small">4 min</span>
+        </div>
+    </li>
+    <li class="divider"></li>
+    <li>
+        <a class="text-center" href="/">
+            <strong>See All Alerts</strong>
+            <i class="fa fa-angle-right"></i>
+        </a>
+    </li>
+</ul>
+<nav class="navbar-default navbar-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav" id="main-menu">
+            <li>
+                <% if (index == 1) {%>
+                <a href="/home" class="active-menu waves-effect waves-dark"><i class="iconmoon icon-index"></i>HOME</a>
+                <% } else { %>
+                <a href="/home" class="waves-effect waves-dark"><i class="iconmoon icon-index"></i>HOME</a>
+                <% } %>
+            </li>
+            <li>
+                <% if (index == 2) {%>
+                <a href="/user" class="active-menu waves-effect waves-dark"><i class="iconmoon icon-user"></i>用户管理</a>
+                <% } else { %>
+                <a href="/user" class="waves-effect waves-dark"><i class="iconmoon icon-user"></i>用户管理</a>
+                <% } %>
+            </li>
+            <li>
+                <% if (index == 3) {%>
+                <a href="/article" class="active-menu waves-effect waves-dark"><i class="iconmoon icon-article"></i>文章管理</a>
+                <% } else { %>
+                <a href="/article" class="waves-effect waves-dark"><i class="iconmoon icon-article"></i>文章管理</a>
+                <% } %>
+            </li>
+            <li>
+                <% if (index == 4) {%>
+                <a href="/reco" class="active-menu waves-effect waves-dark"><i class="iconmoon icon-reco"></i>推荐内容管理</a>
+                <% } else { %>
+                <a href="/reco" class="waves-effect waves-dark"><i class="iconmoon icon-reco"></i>推荐内容管理</a>
+                <% } %>
+            </li>
+            <li>
+                <% if (index == 5) {%>
+                <a href="/scrollPage" class="active-menu waves-effect waves-dark"><i class="iconmoon icon-home"></i>首页轮播管理</a>
+                <% } else { %>
+                <a href="/scrollPage" class="waves-effect waves-dark"><i class="iconmoon icon-home"></i>首页轮播管理</a>
+                <% } %>
+            </li>
+            <li>
+                <% if (index == 6) {%>
+                <a href="/resetMan" class="active-menu waves-effect waves-dark"><i class="iconmoon icon-reset"></i>重置管理</a>
+                <% } else { %>
+                <a href="/resetMan" class="waves-effect waves-dark"><i class="iconmoon icon-reset"></i>重置管理</a>
+                <% } %>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<script type="text/javascript" src="/js/script/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="/js/script/materialize.min.js"></script>
+<script type="text/javascript" src="/js/script/chart/jquery.metisMenu.js"></script>
+<script type="text/javascript" src="/js/script/chart/morris.js"></script>
+<script type="text/javascript" src="/js/script/chart/raphael-2.1.0.min.js"></script>
+<script type="text/javascript" src="/js/script/custom-scripts.js"></script>
+</body>
+</html>

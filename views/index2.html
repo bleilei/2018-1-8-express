@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%=title%></title>
+    <link rel="stylesheet" type="text/css" href="/style/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/style/csslog/login.css">
+</head>
+<body>
+<div style="height:1px;"></div>
+<div class="login">
+    <header>
+        <h1>登陆</h1>
+    </header>
+    <div class="sr">
+        <form>
+            <div class="name">
+                <label>
+                    <i class="sublist-icon glyphicon glyphicon-user"></i>
+                </label>
+                <input type="text" id="username" placeholder="请输入登陆名" class="name_inp">
+            </div>
+            <div class="name">
+                <label>
+                    <i class="sublist-icon glyphicon glyphicon-pencil"></i>
+                </label>
+                <input type="text" id="password" placeholder="请输入登陆密码" class="name_inp">
+            </div>
+            <button type="button" class="dl" onclick="login()">登陆</button>
+        </form>
+    </div>
+</div>
+</div>
+<script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
+<script>
+    function login(){
+        var username = document.getElementById('username').value;
+        var password = document.getElementById('password').value;
+        if(!username){
+            alert('请输入正确的登陆名！');
+            return;
+        }
+        if(!password){
+            alert('请输入正确的登陆密码！');
+            return;
+        }
+        $.ajax({
+            url: "/getDataLogin",
+            type: 'GET',
+            timeout:10000,
+            data: {
+                username:username,
+                password:password
+            },
+            success: function(returnJson) {
+                if(returnJson.msg === 'success'){
+                    alert(returnJson.data);
+                    location.href = '/home'
+                }else{
+                    alert(returnJson.data)
+                }
+            },error:function(err){
+                alert(err)
+            }
+        })
+    }
+</script>
+</body>
+</html>

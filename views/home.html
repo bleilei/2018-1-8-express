@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>首页</title>
+    <link rel="stylesheet" href="/style/css/icon.css">
+    <link rel="stylesheet" href="/style/css/materialize.min.css"/>
+    <link rel="stylesheet" href="/style/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/style/resetBootstrap.css">
+    <link rel="stylesheet" href="/style/iconfont.css"/>
+    <link rel="stylesheet" href="/style/css/custom-styles.css"/>
+    <link rel="stylesheet" href="/style/window.css">
+    <style>
+        .userInfo{
+            margin:10px;
+        }
+        .userInfo dd{
+            width:100%;
+            display:flex;
+            display:-webkit-flex;
+        }
+        .userInfo dd label,.userInfo dd p{
+            font-size:14px;
+            line-height:2;
+            display:inline-block;
+        }
+        .userInfo dd label{
+            width:25%;
+            text-align:right;
+        }
+        .userInfo dd p{
+            width:75%;
+            text-align:left;
+        }
+    </style>
+</head>
+
+<body style="overflow-y:hidden;">
+<div id="wrapper">
+    <%-include header.html-%>
+    <div id="page-wrapper">
+        <div class="header">
+            <ol class="breadcrumb">
+                <li>当前位置：</li>
+                <li><a href="/home">Home</a></li>
+            </ol>
+        </div>
+        <a href="/more"><button>点击我测试</button></a>
+        <div id="page-inner">
+            <div class="row">
+                <div class="col-sm-12 col-xs-12">
+                    <div class="card">
+                        <div class="card-action">
+                            单日注册量
+                        </div>
+                        <div class="card-content">
+                            <div id="morris-line-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%-include footer.html-%>
+    </div>
+</div>
+<script type="text/javascript" src="/js/layer.js"></script>
+<script type="text/javascript" src="/js/window.js"></script>
+<script>
+    $(document).ready(function(){
+        var newData = [];
+        $.ajax({
+            url:'/getUseRegist',
+            type:"GET",
+            timeout:10000,
+            data:{},
+            success:function(returnJson){
+                if(returnJson.msg === 'success'){
+                    var nowDate = new Date();
+                    var year = nowDate.getFullYear();
+                    var month = nowDate.getMonth() + 1;
+                    var data = returnJson.data;
+                    for(var i = 1; i <= month; i++){
+                        var fifterArry = [];
+                        var item = data.filter(function(o){
+                            return o.date > year + '-' + i + '-1 00:00:00' && o.date < year + '-' + (i + 1) + '-1 00:00:00';
+                        });
+                        fifterArry = fifterArry.concat(item);
+                        var newjson = {
+                            y:year + '-' + i,
+                            a:fifterArry.length
+                        };
+                        newData = newData.concat(newjson)
+                    }
+                }else{
+                    layer.msg(returnJson.data)
+                }
+            },error:function(){
+                layer.msg('网络异常')
+            }
+        });
+        setTimeout(function(){
+            Morris.Line({
+                element: 'morris-line-chart',
+                data: newData,
+                xkey: 'y',
+                ykeys: ['a'],
+                labels: ['注册用户数量'],
+                fillOpacity: 0.6,
+                hideHover: 'auto',
+                behaveLikeLine: true,
+                resize: true,
+                pointFillColors: ['#ffffff'],
+                pointStrokeColors: ['black'],
+                lineColors: ['gray', '#414e63']
+            });
+        },1000);
+    })
+</script>
+</body>
+</html>
